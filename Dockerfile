@@ -48,7 +48,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/openssh.conf
 
 # Add user to run the application
 COPY authorized_keys /tmp/authorized_keys
-RUN adduser user --disabled-password; \
+RUN adduser --disabled-password --gecos "" user; \
     mkdir -p /home/user/.ssh; \
     chmod 700 /home/user/.ssh; \
     cp -f /tmp/authorized_keys /home/user/.ssh/authorized_keys; \
