@@ -17,6 +17,7 @@ RUN echo 'Acquire::https::proxy::www.xpra.org "DIRECT";' >> /etc/apt/apt.conf.d/
 RUN set -x; \
     apt-get update \
     && apt-get install -y \
+    apt-transport-https \
     supervisor \
     openssh-server \
     git \
