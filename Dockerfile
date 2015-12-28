@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN set -x; \
     apt-get update \
     && apt-get install -y \
-    apt-transport-https
+    apt-transport-https \
     && rm -rf /var/lib/apt/lists/*
 
 # Support xpra, xserver-xspice
