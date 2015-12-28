@@ -22,6 +22,7 @@ RUN echo 'Acquire::https::proxy::www.xpra.org "DIRECT";' >> /etc/apt/apt.conf.d/
 RUN set -x; \
     apt-get update \
     && apt-get install -y \
+    net-tools \
     supervisor \
     openssh-server \
     git \
@@ -59,6 +60,11 @@ RUN adduser --disabled-password --gecos "" user; \
 RUN cd /home/user; \
     git clone http://anongit.freedesktop.org/git/spice/spice-html5.git/ spice-html5; \
     chown -R user:user /home/user/spice-html5
+
+# xpra X server config
+COPY xorg.conf /home/user/xorg.config
+RUN sed -i  "s/\(client.connect(server, port,\) false);/\1 true);/g" /usr/share/xpra/www/index.html
+RUN sed -i  's/\( +"share" +:\) *false,/\1 true,/g' /usr/share/xpra/www/include/xpra_client.js
 
 # ssh config
 RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
