@@ -65,6 +65,9 @@ RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/
   rm /etc/ssh/sshd_config.bak; \
   mkdir /var/run/sshd;
 
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 EXPOSE 22 5000
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD [""]
