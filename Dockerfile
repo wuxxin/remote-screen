@@ -2,6 +2,11 @@ FROM ubuntu:wily
 MAINTAINER Felix Erkinger <wuxxin@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
+RUN set -x; \
+    apt-get update \
+    && apt-get install -y \
+    apt-transport-https
+    && rm -rf /var/lib/apt/lists/*
 
 # Support xpra, xserver-xspice
 # xpra has a html5 client, spice has a html5 client
@@ -17,7 +22,6 @@ RUN echo 'Acquire::https::proxy::www.xpra.org "DIRECT";' >> /etc/apt/apt.conf.d/
 RUN set -x; \
     apt-get update \
     && apt-get install -y \
-    apt-transport-https \
     supervisor \
     openssh-server \
     git \
