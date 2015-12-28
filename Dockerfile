@@ -70,4 +70,4 @@ RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 22 5000
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD [""]
+CMD ["ssh"]
