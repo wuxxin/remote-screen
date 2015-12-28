@@ -11,7 +11,8 @@ RUN apt-key add /tmp/xpra_signing.key
 RUN echo "deb https://www.xpra.org/ wily main" > /etc/apt/sources.list.d/xpra.list
 # XXX: xpra.org hase some minor https quirks, we work around that because packages are signed
 # XXX: we also set not to use a proxy to connect to xpra, because apt-cacher-ng fails in doing so
-RUN echo -e 'Acquire::https::www.xpra.org::Verify-Peer "false";\nAcquire::https::proxy::www.xpra.org "DIRECT";' > /etc/apt/apt.conf.d/40xpra-https-exception
+RUN echo 'Acquire::https::www.xpra.org::Verify-Peer "false";' > /etc/apt/apt.conf.d/40xpra-https-exception
+RUN echo 'Acquire::https::proxy::www.xpra.org "DIRECT";' >> /etc/apt/apt.conf.d/40xpra-https-exception
 
 RUN set -x; \
     apt-get update \
