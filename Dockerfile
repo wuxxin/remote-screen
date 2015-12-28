@@ -1,4 +1,4 @@
-FROM wily
+FROM ubuntu:wily
 MAINTAINER Felix Erkinger <wuxxin@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
