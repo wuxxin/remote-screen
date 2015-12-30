@@ -1,6 +1,9 @@
 FROM ubuntu:wily
 MAINTAINER Felix Erkinger <wuxxin@gmail.com>
 
+# webbrowser based shared firefox or chrome and evince (pdf)
+# using xpra and xserver-xspice (both have a wip html5 client)
+
 ENV DEBIAN_FRONTEND noninteractive
 RUN set -x; \
     apt-get update \
@@ -8,14 +11,11 @@ RUN set -x; \
     apt-transport-https \
     && rm -rf /var/lib/apt/lists/*
 
-# Support xpra, xserver-xspice
-# xpra has a html5 client, spice has a html5 client
-
 COPY xpra_signing.key /tmp
 RUN apt-key add /tmp/xpra_signing.key
 RUN echo "deb https://www.xpra.org/ wily main" > /etc/apt/sources.list.d/xpra.list
 # XXX: xpra.org hase some minor https quirks, we work around that because packages are signed
-# XXX: we also set not to use a proxy to connect to xpra, because apt-cacher-ng fails in doing so
+# XXX: also set not to use a proxy to connect to xpra, because apt-cacher-ng fails in doing so
 RUN echo 'Acquire::https::www.xpra.org::Verify-Peer "false";' > /etc/apt/apt.conf.d/40xpra-https-exception
 RUN echo 'Acquire::https::proxy::www.xpra.org "DIRECT";' >> /etc/apt/apt.conf.d/40xpra-https-exception
 
@@ -34,8 +34,8 @@ RUN set -x; \
     python-gst-1.0 \
     chromium-browser \
     firefox \
+    evince \
     && rm -rf /var/lib/apt/lists/*
-
 
 # setup locale
 ENV LANG en_US.UTF-8
@@ -61,8 +61,11 @@ RUN cd /home/user; \
     git clone http://anongit.freedesktop.org/git/spice/spice-html5.git/ spice-html5; \
     chown -R user:user /home/user/spice-html5
 
+# Xspice X server config
+COPY xspice-xorg.conf /home/user/xspice-xorg.conf
+
 # xpra X server config
-COPY xorg.conf /home/user/xorg.config
+COPY xpra-xorg.conf /home/user/xpra-xorg.conf
 RUN sed -i  "s/\(client.connect(server, port,\) false);/\1 true);/g" /usr/share/xpra/www/index.html
 RUN sed -i  's/\( +"share" +:\) *false,/\1 true,/g' /usr/share/xpra/www/include/xpra_client.js
 

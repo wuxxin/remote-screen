@@ -1,3 +1,7 @@
+#!/bin/bash
+
+startapp=${1:-chromium-browser}
+export DISPLAY=:10
 xpra start \
   --sharing=yes \
   --readonly=no \
@@ -7,11 +11,13 @@ xpra start \
   --pulseaudio=no \
   --printing=no \
   --clipboard=yes \
-  --html=on \
-  --bind-tcp=127.0.0.1:5000 \
+  --html=:5000 \
+  --bind-tcp=:6000 \
   --exit-with-children \
   --daemon=no \
-  --xvfb="Xorg -dpi 96 -noreset -nolisten tcp +extension GLX +extension RANDR +extension RENDER  -config ${HOME}/xorg.conf" \
-  --ssh="ssh -x -p 10024" \
-  --start-child=chromium-browser \
-  ssh:user@remote-browser.omoikane.ep3.at
+  --xvfb="Xorg -dpi 96 -noreset -nolisten tcp +extension GLX +extension RANDR +extension RENDER  -config ${HOME}/xpra-xorg.conf" \
+  --start-child=$startapp \
+  $DISPLAY
+
+#  --ssh="ssh -x -p 10024" \
+#  ssh:user@address
