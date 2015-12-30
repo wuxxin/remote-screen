@@ -17,5 +17,6 @@ available for shared remote usage via a local webbrowser.
 
 ## TODO
 
-1. xspice-client.sh
-2. screen-cast.sh
+* Bug: xpra_client.js: readwrite is not honored 
+* WIP: xspice-client.sh
+* WIP: screen-cast.sh

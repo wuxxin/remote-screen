@@ -64,10 +64,9 @@ RUN cd /home/user; \
 # Xspice X server config
 COPY xspice-xorg.conf /home/user/xspice-xorg.conf
 
-# xpra X server config
+# xpra config
 COPY xpra-xorg.conf /home/user/xpra-xorg.conf
-RUN sed -i  "s/\(client.connect(server, port,\) false);/\1 true);/g" /usr/share/xpra/www/index.html
-RUN sed -i  's/\( +"share" +:\) *false,/\1 true,/g' /usr/share/xpra/www/include/xpra_client.js
+COPY xpra-html5 /usr/share/xpra/www
 
 # ssh config
 RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
