@@ -17,6 +17,7 @@ available for shared remote usage via a local webbrowser.
 
 ## TODO
 
-* Bug: xpra_client.js: readwrite is not honored 
+* fix resolution to something like 1024x768 using xpra-xorg.conf
+* Bug: xpra_client.js: readwrite is not honored
 * WIP: xspice-client.sh
 * WIP: screen-cast.sh

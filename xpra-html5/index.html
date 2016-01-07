@@ -129,7 +129,7 @@
 			.ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
 			.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
 		</style>
-		
+
 		<link rel="stylesheet" href="include/spinner.css">
 
 		<script type="text/javascript" src="include/jquery.min.js"></script>
@@ -218,7 +218,7 @@
 
 			    // readwrite support
 			    if(readwrite) {
-			    	client.audio_enabled = true;
+			    	client.readwrite = true;
 			    }
 
 			    // check for username and password
@@ -255,7 +255,7 @@
 
 			    // and connect
 			    client.connect(server, port, true);
-			
+
 			    if (readwrite) {
 				// attach a callback for paste on the screen
 				$('#pasteboard').on('paste', function (e) {
