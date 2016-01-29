@@ -68,6 +68,9 @@ COPY xspice-xorg.conf /home/user/xspice-xorg.conf
 COPY xpra-xorg.conf /home/user/xpra-xorg.conf
 COPY xpra-html5 /usr/share/xpra/www
 
+# client shell scripts
+COPY bin /usr/local/bin
+
 # ssh config
 RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
   rm /etc/ssh/sshd_config.bak; \

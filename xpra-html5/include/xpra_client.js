@@ -29,7 +29,7 @@ function XpraClient(container) {
 	this.normal_fullscreen_mode = false;
 	this.username = "html5user";
 	this.disconnect_reason = null;
-	this.readwrite = true;
+	this.readwrite = false;
 	// encryption
 	this.encryption = false;
 	this.encryption_key = null;
@@ -750,7 +750,7 @@ XpraClient.prototype._window_geometry_changed = function(win) {
 	// so use win.client instead of `this` to refer to the client
 	var geom = win.get_internal_geometry();
 	var wid = win.wid;
-	
+
 	if (!win.override_redirect) {
 		win.client._window_set_focus(win);
 	}

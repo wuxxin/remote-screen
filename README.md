@@ -11,7 +11,7 @@ available for shared remote usage via a local webbrowser.
   1. link port 22 of container to an outside port for ssh connection
   2. link port 5000 of container to a https web frontend with websocket support (nginx works)
       (eg. using dokku)
-3. `ssh user@yourserver.yourdomain -p yoursshport -c "~/xpra-client.sh chromium-browser"`
+3. `ssh user@yourserver.yourdomain -p yoursshport "~/xpra-client.sh chromium-browser"`
 4. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
   `https://yourserver.yourdomain/connect.html` and select "readwrite" for keyboard/mouse access
 
