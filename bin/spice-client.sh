@@ -15,5 +15,6 @@ Xspice \
 
   #--vdagent \
   #+extension GLX \
-websockify --web /home/user/spice-html5/ 5000 0.0.0.0:5910 &
-firefox
+websockify --auto-pong --heartbeat=58 --web /home/user/spice-html5/ 5000 localhost:5910 &
+
+if test -z "$1" ; then chromium-browser; else $@; fi

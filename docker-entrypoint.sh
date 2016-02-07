@@ -3,6 +3,22 @@ set -e
 
 if test "$1" = "ssh"; then
   shift
+
+  if test -z "$REMOTE_VIEWONLY_PASSWORD" -o "$REMOTE_VIEWONLY_PASSWORD" = "unset"; then
+    REMOTE_VIEWONLY_PASSWORD=$(openssl rand 6 | python -c "import sys, base64; sys.stdout.write(base64.b32encode(sys.stdin.read()).lower())" | tr -d =)
+    export REMOTE_VIEWONLY_PASSWORD
+  fi
+
+  if test -z "$REMOTE_READWRITE_PASSWORD" -o "$REMOTE_READWRITE_PASSWORD" = "unset"; then
+    REMOTE_READWRITE_PASSWORD=$(openssl rand 6 | python -c "import sys, base64; sys.stdout.write(base64.b32encode(sys.stdin.read()).lower())" | tr -d =)
+    export REMOTE_READWRITE_PASSWORD
+  fi
+
+  sed -i.bak "s/(password = WebUtil.getConfigVar\('password', ').+('\);)/\1$REMOTE_VIEWONLY_PASSWORD\2/g" /home/user/noVNC/index.html
+  if test -f /home/user/noVNC/index.html.bak; then
+    rm /home/user/noVNC/index.html.bak
+  fi
+
   exec /usr/bin/supervisord -c /etc/supervisor/conf.d/openssh.conf "$@"
 else
   exec "$@"

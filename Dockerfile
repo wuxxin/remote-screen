@@ -1,16 +1,20 @@
 FROM ubuntu:wily
 MAINTAINER Felix Erkinger <wuxxin@gmail.com>
 
-# webbrowser based shared firefox or chrome and evince (pdf)
-# using xpra and xserver-xspice (both have a wip html5 client)
+ENV REMOTE_TITLE remote-screen
+ENV REMOTE_VIEWONLY_PASSWORD unset
+ENV REMOTE_READWRITE_PASSWORD unset
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN set -x; \
     apt-get update \
     && apt-get install -y \
     apt-transport-https \
+    python-software-properties \
+    software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
+# xpra repo
 COPY xpra_signing.key /tmp
 RUN apt-key add /tmp/xpra_signing.key
 RUN echo "deb https://www.xpra.org/ wily main" > /etc/apt/sources.list.d/xpra.list
@@ -23,29 +27,55 @@ RUN set -x; \
     apt-get update \
     && apt-get install -y \
     net-tools \
+    curl \
     supervisor \
     openssh-server \
     git \
-    websockify \
+    mercurial \
+    libx11-dev \
+    xbindkeys \
+    psmisc \
     xserver-xspice \
     spice-vdagent \
     xserver-xorg-video-dummy \
+    openbox \
+    x11vnc \
+    xvfb \
     xpra \
     python-gst-1.0 \
     chromium-browser \
     firefox \
     evince \
+    python3-pip \
+    python-pip \
+    openssl \
+    gdebi-core \
     && rm -rf /var/lib/apt/lists/*
+
+# install from pypi: websockify for python3
+RUN pip3 install -y websockify
+#RUN pip install -y supervisor
+
+RUN curl -o /tmp/atom.deb -L https://atom.io/download/deb && gdebi -n /tmp/atom.deb
+
 
 # setup locale
 ENV LANG en_US.UTF-8
 ENV LC_TYPE en_US.UTF-8
-RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 RUN echo -e "LANG=en_US.UTF-8\nLC_TYPE=en_US.UTF-8\nLC_MESSAGES=POSIX\nLANGUAGE=en" > /etc/default/locale
+RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 RUN locale -a
 
 # Add supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/openssh.conf
+
+# client shell scripts
+COPY bin /usr/local/bin
+
+# ssh config
+RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
+ rm /etc/ssh/sshd_config.bak; \
+ mkdir /var/run/sshd;
 
 # Add user to run the application
 COPY authorized_keys /tmp/authorized_keys
@@ -56,26 +86,41 @@ RUN adduser --disabled-password --gecos "" user; \
     chmod 600 /home/user/.ssh/authorized_keys; \
     chown -R user:user /home/user/.ssh
 
-# spice-html5 client
-RUN cd /home/user; \
-    git clone http://anongit.freedesktop.org/git/spice/spice-html5.git/ spice-html5; \
-    chown -R user:user /home/user/spice-html5
+USER user
+WORKDIR /home/user
 
-# Xspice X server config
-COPY xspice-xorg.conf /home/user/xspice-xorg.conf
+# get & compile findcursor
+RUN hg clone https://bitbucket.org/Carpetsmoker/find-cursor \
+    && cd find-cursor \
+    && sed -i.bak "s/(int speed =) 400;/\1 800;/g" find-cursor.c \
+    && rm find-cursor.c.bak \
+    && make
 
-# xpra config
+# spice html5 client
+RUN git clone http://anongit.freedesktop.org/git/spice/spice-html5.git/ spice-html5
+COPY xspice-xorg.conf xspice-xorg.conf
+
+# novnc html5 client
+RUN git clone https://github.com/kanaka/noVNC.git noVNC
+COPY novnc.index.html /home/user/noVNC/index.html
+RUN sed -i.bak "s/{{ REMOTE_TITLE }}/$REMOTE_TITEL/g" /home/user/noVNC/index.html \
+    && rm /home/user/noVNC/index.html.bak
+
+# xpra config and html5 client patch
 COPY xpra-xorg.conf /home/user/xpra-xorg.conf
+
+# make a xbindkeys config
+cat > /home/user/.xbindkeysrc << EOF
+"/usr/local/bin/find-cursor"
+  control + b:1
+EOF
+
+# root from here
+USER root
 COPY xpra-html5 /usr/share/xpra/www
+RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
 
-# client shell scripts
-COPY bin /usr/local/bin
-
-# ssh config
-RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
-  rm /etc/ssh/sshd_config.bak; \
-  mkdir /var/run/sshd;
-
+# entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 

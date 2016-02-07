@@ -11,7 +11,6 @@ xpra start \
   --pulseaudio=no \
   --printing=no \
   --clipboard=yes \
-  --html=:5000 \
   --bind-tcp=:6000 \
   --exit-with-children \
   --daemon=no \
@@ -19,5 +18,6 @@ xpra start \
   --start-child=$startapp \
   $DISPLAY
 
+# --html=:5000 \
 #  --ssh="ssh -x -p 10024" \
 #  ssh:user@address
