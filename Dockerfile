@@ -4,6 +4,7 @@ MAINTAINER Felix Erkinger <wuxxin@gmail.com>
 ENV REMOTE_TITLE remote-screen
 ENV REMOTE_VIEWONLY_PASSWORD unset
 ENV REMOTE_READWRITE_PASSWORD unset
+ENV REMOTE_AUTOMATIC_VIEW true
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN set -x; \
@@ -119,6 +120,14 @@ EOF
 USER root
 COPY xpra-html5 /usr/share/xpra/www
 RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
+
+# copy possible custom configuration to container, and execute custom_root.sh from it
+COPY custom /home/user/custom
+RUN chown -R user:user /home/user/custom \
+    && chmod +x /home/user/custom/*.sh \
+    && if test -f  /home/user/custom/custom_root.sh; then \
+          /home/user/custom/custom_root.sh \
+       fi
 
 # entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
