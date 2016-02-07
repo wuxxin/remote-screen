@@ -35,7 +35,7 @@ the vnc-relay.sh script allows to relay vnc data from another vnc server to the 
 #### experimental
 
 * spice: read/write access to a browser running in the container
-  * Describe me ( key is spice-client.sh )
+  * Describe me ( look inside spice-client.sh )
 
 * xpra: read/write and view access to a browser running in the container
   1. `ssh user@yourserver.yourdomain -p yoursshport "~/xpra-client.sh chromium-browser"`
