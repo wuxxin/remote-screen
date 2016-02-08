@@ -76,7 +76,7 @@ RUN locale -a
 COPY supervisord.conf /etc/supervisor/conf.d/openssh.conf
 
 # ssh config
-RUN sed -i .bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
+RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
  rm /etc/ssh/sshd_config.bak; \
  mkdir /var/run/sshd;
 
@@ -109,7 +109,7 @@ COPY xspice-xorg.conf xspice-xorg.conf
 # novnc html5 client
 RUN git clone https://github.com/kanaka/noVNC.git noVNC
 COPY novnc.index.html /home/user/noVNC/index.html
-RUN sed -i .bak "s/REMOTE_TITLE/$REMOTE_TITLE/g" /home/user/noVNC/index.html \
+RUN sed -i.bak "s/REMOTE_TITLE/$REMOTE_TITLE/g" /home/user/noVNC/index.html \
     && rm /home/user/noVNC/index.html.bak
 
 # xpra config
