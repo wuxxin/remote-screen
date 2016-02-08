@@ -10,8 +10,8 @@ ENV REMOTE_AUTOMATIC_VIEW true
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN set -x; \
-    apt-get update \
-    apt-get upgrade \
+    && apt-get update \
+    && apt-get upgrade \
     && apt-get install -y \
     apt-transport-https \
     python-software-properties \
