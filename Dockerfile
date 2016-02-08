@@ -75,9 +75,6 @@ RUN locale -a
 # Add supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/openssh.conf
 
-# client shell scripts
-COPY bin /usr/local/bin
-
 # ssh config
 RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
  rm /etc/ssh/sshd_config.bak; \
@@ -126,6 +123,9 @@ COPY xpra-html5 /usr/share/xpra/www
 
 # copy find-cursor to system wide /usr/local/bin
 RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
+
+# client shell scripts
+COPY bin /usr/local/bin
 
 # copy possible custom configuration to container, and execute custom_root.sh from it
 ONBUILD COPY custom /home/user/custom
