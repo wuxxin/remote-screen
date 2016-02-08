@@ -51,6 +51,7 @@ RUN set -x; \
     firefox \
     evince \
     python-pip \
+    python3-pip \
     openssl \
     gdebi-core \
     && rm -rf /var/lib/apt/lists/*
@@ -58,8 +59,8 @@ RUN set -x; \
 # delete ssh host keys regenerate them on deploy
 RUN rm /etc/ssh/ssh_host_*_key*
 
-# install from pypi: websockify for python2/3
-RUN pip install websockify
+# install from pypi: websockify for python3 because 0.7 is currently only available for py3
+RUN pip3 install websockify
 
 # install the latest atom (nice to have)
 #RUN curl -o /tmp/atom.deb -L https://atom.io/download/deb && gdebi -n /tmp/atom.deb
