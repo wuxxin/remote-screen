@@ -18,7 +18,7 @@ if test "$1" = "ssh"; then
 
   if test -z "$REMOTE_AUTOMATIC_VIEW" -o "$REMOTE_AUTOMATIC_VIEW" = "true"; then
     echo "integrate view password in index.html for noVNC"
-    sed -i.bak "s/(password = WebUtil.getConfigVar\('password', ').+('\);)/\1$REMOTE_VIEWONLY_PASSWORD\2/g" /home/user/noVNC/index.html
+    sed -i.bak "s/\(password = WebUtil.getConfigVar('password', '\).+\(');\)/\1$REMOTE_VIEWONLY_PASSWORD\2/g" /home/user/noVNC/index.html
     if test -f /home/user/noVNC/index.html.bak; then
       rm /home/user/noVNC/index.html.bak
     fi
