@@ -97,7 +97,7 @@ WORKDIR /home/user
 # get & compile findcursor
 RUN hg clone https://bitbucket.org/Carpetsmoker/find-cursor \
     && cd find-cursor \
-    && sed -i.bak "s/(int speed =) 400;/\1 800;/g" find-cursor.c \
+    && sed -i.bak "s/int speed = 400;/int speed = 800;/g" find-cursor.c \
     && rm find-cursor.c.bak \
     && make
 
@@ -111,7 +111,7 @@ COPY novnc.index.html /home/user/noVNC/index.html
 RUN sed -i.bak "s/{{ REMOTE_TITLE }}/$REMOTE_TITEL/g" /home/user/noVNC/index.html \
     && rm /home/user/noVNC/index.html.bak
 
-# xpra config and html5 client patch
+# xpra config
 COPY xpra-xorg.conf /home/user/xpra-xorg.conf
 
 # make a xbindkeys config
@@ -122,7 +122,11 @@ EOF
 
 # root from here
 USER root
+
+# xpra client patch
 COPY xpra-html5 /usr/share/xpra/www
+
+# copy find-cursor to system wide /usr/local/bin
 RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
 
 # copy possible custom configuration to container, and execute custom_root.sh from it
