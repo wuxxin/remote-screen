@@ -14,7 +14,7 @@
     or the fragment:
         http://example.com/#host=HOST&port=PORT&encrypt=1&true_color=1
     -->
-    <title>{{ REMOTE_TITLE }}</title>
+    <title>REMOTE_TITLE</title>
 
     <meta charset="utf-8">
 
@@ -152,7 +152,7 @@
             var host, port, password, path, token;
 
             WebUtil.init_logging(WebUtil.getConfigVar('logging', 'warn'));
-            document.title = unescape(WebUtil.getConfigVar('title', '{{ REMOTE_TITLE }}'));
+            document.title = unescape(WebUtil.getConfigVar('title', 'REMOTE_TITLE'));
             // By default, use the host and port of server that served this file
             host = WebUtil.getConfigVar('host', window.location.hostname);
             port = WebUtil.getConfigVar('port', window.location.port);
@@ -168,7 +168,7 @@
                 }
             }
 
-            password = WebUtil.getConfigVar('password', '{{ REMOTE_VIEWONLY_PASSWD }}');
+            password = WebUtil.getConfigVar('password', 'REMOTE_VIEWONLY_PASSWD');
             path = WebUtil.getConfigVar('path', 'websockify');
 
             // If a token variable is passed in, set the parameter in a cookie.
