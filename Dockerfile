@@ -6,9 +6,12 @@ ENV REMOTE_VIEWONLY_PASSWORD unset
 ENV REMOTE_READWRITE_PASSWORD unset
 ENV REMOTE_AUTOMATIC_VIEW true
 
+# we run upgrade (bad container practice) to workaround old "official" docker images (also bad practice, but this time from docker inc)
+
 ENV DEBIAN_FRONTEND noninteractive
 RUN set -x; \
     apt-get update \
+    apt-get upgrade \
     && apt-get install -y \
     apt-transport-https \
     python-software-properties \
@@ -47,18 +50,19 @@ RUN set -x; \
     chromium-browser \
     firefox \
     evince \
-    python3-pip \
     python-pip \
     openssl \
     gdebi-core \
     && rm -rf /var/lib/apt/lists/*
 
-# install from pypi: websockify for python3
-RUN pip3 install -y websockify
-#RUN pip install -y supervisor
+# delete ssh host keys regenerate them on deploy
+RUN rm /etc/ssh/ssh_host_*_key*
 
-RUN curl -o /tmp/atom.deb -L https://atom.io/download/deb && gdebi -n /tmp/atom.deb
+# install from pypi: websockify for python2/3
+RUN pip install websockify
 
+# install the latest atom (nice to have)
+#RUN curl -o /tmp/atom.deb -L https://atom.io/download/deb && gdebi -n /tmp/atom.deb
 
 # setup locale
 ENV LANG en_US.UTF-8
@@ -122,12 +126,14 @@ COPY xpra-html5 /usr/share/xpra/www
 RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
 
 # copy possible custom configuration to container, and execute custom_root.sh from it
-COPY custom /home/user/custom
-RUN chown -R user:user /home/user/custom \
-    && chmod +x /home/user/custom/*.sh \
-    && if test -f  /home/user/custom/custom_root.sh; then \
+ONBUILD COPY custom /home/user/custom
+ONBUILD RUN chown -R user:user /home/user/custom \
+    &&  if test -f /home/user/custom/*.sh; then \
+          chmod +x /home/user/custom/*.sh \
+        fi \
+    &&  if test -f  /home/user/custom/custom_root.sh; then \
           /home/user/custom/custom_root.sh \
-       fi
+        fi
 
 # entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh

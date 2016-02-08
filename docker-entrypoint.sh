@@ -24,6 +24,13 @@ if test "$1" = "ssh"; then
     fi
   fi
 
+  if test ! -e /etc/ssh/ssh_host_rsa_key; then
+    echo "reconfigure ssh server keys"
+    export LC_ALL=C
+    export DEBIAN_FRONTEND=noninteractive
+    dpkg-reconfigure openssh-server
+  fi
+
   exec /usr/bin/supervisord -c /etc/supervisor/conf.d/openssh.conf "$@"
 else
   exec "$@"

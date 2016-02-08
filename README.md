@@ -2,54 +2,66 @@
 
 TLDR: Use a webbrowser to access a webbrowser.
 
-Shared remote access is implemented using different backend technologies (xpra, vnc, spice).
+Shared remote access is implemented using different backend technologies (vnx, xpra, spice).
 Inside the container you have a chromium-browser, firefox, atom and evince installed.
 
 In addition to remote access,
-the vnc-relay.sh script allows to relay vnc data from another vnc server to the webservice.
+you can relay your local computer screen to the webservice, using the vnc-relay.sh script on the serverside and a x11vnc and ssh on the client side. In comparison to skype the screen quality should be very good also at high-resolutions.
 
-## quickstart
 
-### setup
+## Quickstart
+
+### Setup
 1. add ssh public keys of users who should start/control a remote session to authorized_keys
-2. deploy container
+1. deploy container
   1. link port 22 of container to an outside port for ssh connection
-  2. link port 5000 of container to a https web frontend with websocket support (nginx works)
+  1. link port 5000 of container to a https web frontend with websocket support (nginx works)
     (eg. using dokku)
 
-### usage
+#### Environment
+* REMOTE_VIEWONLY_PASSWORD= "yourviewonlypassword"
+  * if "" or "unset" a random password will be created at runtime
+* REMOTE_READWRITE_PASSWORD= "yourreadwritepassword"
+  * if "" or "unset" a random password will be created at runtime
+* REMOTE_AUTOMATIC_VIEW= true
+  * if true, write the viewonly password to index.html for autoconnect at runtime
+  * if false, the automatic viewonly connect will ask for the password
 
-* vnc: read/write and view access to a browser running in the container
-  1. `ssh user@yourserver.yourdomain -p yoursshport "vnc-client.sh"`
-    * the terminal output shows you the view and the read/write password
-  2. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
-    `https://yourserver.yourdomain/vnc_auto.html` and input password
+### Usage
 
-* tunnel a x11vnc from your local computer to a relay on the server side
-  1. start your browser, get windowid (eg. 0x4000001)
-  2. `x11vnc -display :0 -ncache 10 -forever -shared -viewonly -sid windowid`
-  2. `ssh -R localhost:5900:localhost:5900 user@yourserver.yourdomain -p yoursshport   "vnc-relay.sh"`
-  3. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
-    `https://yourserver.yourdomain/vnc_auto.html` and input password
+#### vnc: read/write and view access to a browser running in the container
 
-#### experimental
+1. `ssh user@yourserver.yourdomain -p yoursshport "vnc-client.sh"`
+  * the terminal output shows you the view and the read/write password
+1. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
+  `https://yourserver.yourdomain/vnc_auto.html` and input password
 
-* spice: read/write access to a browser running in the container
+#### vnc: tunnel a x11vnc from your local computer to a relay on the server side
+
+1. start your browser, get windowid (eg. 0x4000001)
+1. `x11vnc -display :0 -ncache 10 -forever -shared -viewonly -sid windowid`
+1. `ssh -R localhost:5900:localhost:5900 user@yourserver.yourdomain -p yoursshport   "vnc-relay.sh"`
+1. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
+  `https://yourserver.yourdomain/vnc_auto.html` and input password
+
+#### Experimental
+
+##### spice: read/write access to a browser running in the container
   * Describe me ( look inside spice-client.sh )
 
-* xpra: read/write and view access to a browser running in the container
+##### xpra: read/write and view access to a browser running in the container
   1. `ssh user@yourserver.yourdomain -p yoursshport "~/xpra-client.sh chromium-browser"`
   2. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
     `https://yourserver.yourdomain/connect.html` and select "readwrite" for keyboard/mouse access
 
-## TODO
+## Todo
 
 * generalize XStartup so every local client can do the same setup
 * WIP: screen-cast.sh
 
 ### remarks xpra-html5
- * Contra: sharing and read/write viewonly is experimental
- * Pro: Very crispy screen quality, including compositing
+ * Contra: sharing and read/write viewonly is very experimental
+ * Pro: Very crispy screen quality, including compositing, low bandwidth, audio
 
 #### fixme
  * read/write also should not trigger resize away from 1024x768 (easy)
@@ -63,5 +75,5 @@ the vnc-relay.sh script allows to relay vnc data from another vnc server to the 
 
 ### remarks xspice
 
-* Pro: Audio, USB and other fancy stuff for relaying, very crispy, smooth screen updates
+* Pro: versatile (QEMU Server Support, X11 Server Support), Audio, remote USB sharing and other fancy stuff for relaying, very crispy screen quality, smooth screen updates
 * Contra: client bitrotten, smooth but slow screen updates, high-bandwith
