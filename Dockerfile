@@ -101,6 +101,9 @@ RUN hg clone https://bitbucket.org/Carpetsmoker/find-cursor \
     && rm find-cursor.c.bak \
     && make
 
+# make a xbindkeys config
+RUN echo -e '"/usr/local/bin/find-cursor"\n  control + b:1\n' > /home/user/.xbindkeysrc
+
 # spice html5 client
 RUN git clone http://anongit.freedesktop.org/git/spice/spice-html5.git/ spice-html5
 COPY xspice-xorg.conf xspice-xorg.conf
@@ -113,12 +116,6 @@ RUN sed -i.bak "s/{{ REMOTE_TITLE }}/$REMOTE_TITEL/g" /home/user/noVNC/index.htm
 
 # xpra config
 COPY xpra-xorg.conf /home/user/xpra-xorg.conf
-
-# make a xbindkeys config
-cat > /home/user/.xbindkeysrc << EOF
-"/usr/local/bin/find-cursor"
-  control + b:1
-EOF
 
 # root from here
 USER root
