@@ -24,6 +24,13 @@ if test "$1" = "ssh"; then
     fi
   fi
 
+  echo "write ~/vnc.pass (including READWRITE and VIEWONLY password)"
+  cat > /home/user/vnc.pass << EOF
+$REMOTE_READWRITE_PASSWORD
+__BEGIN_VIEWONLY
+$REMOTE_VIEWONLY_PASSWORD
+EOF
+
   if test ! -e /etc/ssh/ssh_host_rsa_key; then
     echo "reconfigure ssh server keys"
     export LC_ALL=C

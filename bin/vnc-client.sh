@@ -1,11 +1,9 @@
 #!/bin/bash
 export DISPLAY=:10
 
-cat > $HOME/vnc.pass << EOF
-$REMOTE_READWRITE_PASSWORD
-__BEGIN_VIEWONLY
-$REMOTE_VIEWONLY_PASSWORD
-EOF
+read -r -a vncpass < $HOME/vnc.pass
+REMOTE_READWRITE_PASSWORD="${vncpass[0]}"
+REMOTE_VIEWONLY_PASSWORD="${vncpass[2]}"
 
 Xorg $DISPLAY -dpi 96 -noreset -nolisten tcp +extension GLX +extension RANDR +extension RENDER  -config ${HOME}/xpra-xorg.conf &
 x11vnc -xdummy -display $DISPLAY -viewpasswd $REMOTE_VIEWONLY_PASSWORD -passwd $REMOTE_READWRITE_PASSWORD -rfbport 5900 -forever -shared  &
