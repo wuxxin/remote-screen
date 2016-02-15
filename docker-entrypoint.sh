@@ -38,6 +38,7 @@ EOF
     dpkg-reconfigure openssh-server
   fi
 
+  cd /home/user
   exec /usr/bin/supervisord -c /home/user/supervisord.conf "$@"
 else
   exec "$@"
