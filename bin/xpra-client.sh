@@ -14,7 +14,7 @@ xpra start \
   --bind-tcp=:6000 \
   --exit-with-children \
   --daemon=no \
-  --xvfb="Xorg -dpi 96 -noreset -nolisten tcp +extension GLX +extension RANDR +extension RENDER  -config ${HOME}/xpra-xorg.conf" \
+  --xvfb="Xorg -dpi 96 -noreset -nolisten tcp +extension GLX +extension RANDR +extension RENDER  -config ${HOME}/fixed-1024-xorg.conf" \
   --start-child=$startapp \
   $DISPLAY
 

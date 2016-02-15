@@ -30,6 +30,7 @@ RUN echo 'Acquire::https::proxy::www.xpra.org "DIRECT";' >> /etc/apt/apt.conf.d/
 RUN set -x; \
     apt-get update \
     && apt-get install -y \
+    man-db \
     net-tools \
     curl \
     supervisor \
@@ -44,6 +45,7 @@ RUN set -x; \
     xserver-xorg-video-dummy \
     openbox \
     x11vnc \
+    xinit \
     xvfb \
     xpra \
     python-gst-1.0 \
@@ -72,9 +74,6 @@ RUN echo -e "LANG=en_US.UTF-8\nLC_TYPE=en_US.UTF-8\nLC_MESSAGES=POSIX\nLANGUAGE=
 RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 RUN locale -a
 
-# Add supervisor configuration
-COPY supervisord.conf /etc/supervisor/conf.d/openssh.conf
-
 # ssh config
 RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
  rm /etc/ssh/sshd_config.bak; \
@@ -92,6 +91,12 @@ RUN adduser --disabled-password --gecos "" user; \
 USER user
 WORKDIR /home/user
 
+# client shell scripts to ~/bin
+COPY bin /home/user/bin
+
+# Add supervisor configuration
+COPY supervisord.conf /home/user/supervisord.conf
+
 # get & compile findcursor
 RUN hg clone https://bitbucket.org/Carpetsmoker/find-cursor \
     && cd find-cursor \
@@ -99,8 +104,11 @@ RUN hg clone https://bitbucket.org/Carpetsmoker/find-cursor \
     && rm find-cursor.c.bak \
     && make
 
-# make a xbindkeys config
-RUN echo -e '"/usr/local/bin/find-cursor"\n  control + b:1\n' > /home/user/.xbindkeysrc
+# xbindkeys config
+COPY xbindkeysrc /home/user/.xbindkeysrc
+
+# x11 config for both vnc and xpra
+COPY fixed-1024-xorg.conf /home/user/fixed-1024-xorg.conf
 
 # spice html5 client
 RUN git clone http://anongit.freedesktop.org/git/spice/spice-html5.git/ spice-html5
@@ -112,9 +120,6 @@ COPY novnc.index.html /home/user/noVNC/index.html
 RUN sed -i.bak "s/REMOTE_TITLE/$REMOTE_TITLE/g" /home/user/noVNC/index.html \
     && rm /home/user/noVNC/index.html.bak
 
-# xpra config
-COPY xpra-xorg.conf /home/user/xpra-xorg.conf
-
 # root from here
 USER root
 
@@ -123,9 +128,6 @@ COPY xpra-html5 /usr/share/xpra/www
 
 # copy find-cursor to system wide /usr/local/bin
 RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
-
-# client shell scripts
-COPY bin /usr/local/bin
 
 # copy possible custom configuration to container, and execute custom_root.sh from it
 ONBUILD COPY custom /home/user/custom
@@ -137,10 +139,19 @@ ONBUILD RUN chown -R user:user /home/user/custom \
           /home/user/custom/custom_root.sh \
         fi
 
+# recreate ssh host keys
+ONBUILD RUN if test ! -e /etc/ssh/ssh_host_rsa_key; then \
+      echo "reconfigure ssh server keys" \
+      export LC_ALL=C \
+      export DEBIAN_FRONTEND=noninteractive \
+      dpkg-reconfigure openssh-server \
+    fi
+
 # entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
+VOLUME ["/home/user/.config", "/home/user/.pki"]
 EXPOSE 22 5000
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["ssh"]
