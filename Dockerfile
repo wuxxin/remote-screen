@@ -79,14 +79,20 @@ RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/
  rm /etc/ssh/sshd_config.bak; \
  mkdir /var/run/sshd;
 
-# Add user to run the application
+# Add user to run the application, update authorized_keys, add symlinks to volume data
 COPY authorized_keys /tmp/authorized_keys
 RUN adduser --disabled-password --gecos "" user; \
     mkdir -p /home/user/.ssh; \
     chmod 700 /home/user/.ssh; \
     cp -f /tmp/authorized_keys /home/user/.ssh/authorized_keys; \
     chmod 600 /home/user/.ssh/authorized_keys; \
-    chown -R user:user /home/user/.ssh
+    chown -R user:user /home/user/.ssh; \
+    for a in .config .pki; do \
+      mkdir -p /data/$a; \
+      ln -s /data/$a /home/user/$a; \
+    done; \
+    chown -R user:user /data
+
 
 USER user
 WORKDIR /home/user

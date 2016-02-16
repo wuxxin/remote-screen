@@ -36,15 +36,16 @@ you can relay your local computer screen to the webservice, using the vnc-relay.
 1. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
   `https://yourserver.yourdomain/vnc_auto.html` and input password
 
-#### vnc: tunnel a x11vnc from your local computer to a relay on the server side
+
+#### Experimental
+
+##### vnc: tunnel a x11vnc from your local computer to a relay on the server side
 
 1. start your browser, get windowid (eg. 0x4000001)
 1. `x11vnc -display :0 -ncache 10 -forever -shared -viewonly -sid windowid`
 1. `ssh -R localhost:5900:localhost:5900 user@yourserver.yourdomain -p yoursshport   "vnc-relay.sh"`
 1. point your webbrowser to `https://yourserver.yourdomain/` to connect readonly or
-  `https://yourserver.yourdomain/vnc_auto.html` and input password
-
-#### Experimental
+`https://yourserver.yourdomain/vnc_auto.html` and input password
 
 ##### spice: read/write access to a browser running in the container
   * Describe me ( look inside spice-client.sh )
