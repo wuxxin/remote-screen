@@ -157,7 +157,7 @@ ONBUILD RUN if test ! -e /etc/ssh/ssh_host_rsa_key; then \
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-VOLUME ["/home/user/.config", "/home/user/.pki"]
+VOLUME ["/data"]
 EXPOSE 22 5000
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["ssh"]
