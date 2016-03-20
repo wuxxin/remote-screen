@@ -1,6 +1,6 @@
 #!/bin/bash
 
-startapp=${1:-chromium-browser}
+startapp=${1:-firefox}
 export DISPLAY=:10
 xpra start \
   --sharing=yes \

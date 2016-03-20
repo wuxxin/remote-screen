@@ -37,25 +37,34 @@ RUN set -x; \
     openssh-server \
     git \
     mercurial \
-    libx11-dev \
-    xbindkeys \
     psmisc \
+    openssl \
+    gdebi-core \
+    python-pip \
+    python3-pip \
+    xbindkeys \
+    libx11-dev \
+    xserver-xorg-video-dummy \
     xserver-xspice \
     spice-vdagent \
-    xserver-xorg-video-dummy \
-    openbox \
     x11vnc \
     xinit \
     xvfb \
     xpra \
+    gstreamer1.0-tools \
+    gstreamer1.0-alsa \
+    gstreamer1.0-pulseaudio \
+    gstreamer1.0-nice \
+    gstreamer1.0-x \
+    gstreamer1.0-plugins-base-apps \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
     python-gst-1.0 \
+    openbox \
     chromium-browser \
     firefox \
     evince \
-    python-pip \
-    python3-pip \
-    openssl \
-    gdebi-core \
     && rm -rf /var/lib/apt/lists/*
 
 # delete ssh host keys regenerate them on deploy

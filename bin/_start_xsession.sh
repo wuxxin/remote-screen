@@ -21,4 +21,4 @@ you can show your mouse position using CTRL+ Left Mouse Button
 
 EOF
 
-if test -z "$1" ; then chromium-browser; else $@; fi
+if test -z "$1" ; then firefox; else $@; fi

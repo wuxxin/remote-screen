@@ -38,6 +38,12 @@ EOF
     dpkg-reconfigure openssh-server
   fi
 
+  for a in .config .pki; do
+    if test ! -f /data/$a; then
+      mkdir -p /data/$a
+    fi
+  done
+
   cd /home/user
   exec /usr/bin/supervisord -c /home/user/supervisord.conf "$@"
 else
