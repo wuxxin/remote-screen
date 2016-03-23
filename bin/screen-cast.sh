@@ -1,20 +1,47 @@
 #!/bin/bash
 
+GST_DEBUG="rfbsrc:6" gst-launch-1.0 rfbsrc host=10.9.140.21 password=cpbtjgbia4 incremental=true view-only=true shared=true ! video/x-raw, format=BGRx, framerate=10/1, width=1024, height=768 ! decodebin ! videoconvert ! x264enc bitrate=1000 speed-preset=fast ! video/x-h264, profile=baseline ! flvmux ! filesink location=test.flv
 
-gst-launch-1.0 -v   rfbsrc view-only=true shared=true ! decodebin ! autovideoconvert !   video/x-raw,format=YV12,width=1024,height=768,framerate=10/1 ! x264enc bitrate=1000 speed-preset=fast  ! video/x-h264,profile=baseline ! h264parse ! queue !  flvmux name=mux pulsesrc ! queue ! avenc_aac ! queue ! mux. mux. ! rtmpsink location=\"rtmp://localhost/myapp/mystream live=1\"
+GST_DEBUG="rfbsrc:4" gst-launch-1.0 rfbsrc host=10.9.140.21 password=cpbtjgbia4 incremental=true view-only=true shared=true ! video/x-raw, format=BGRx, framerate=10/1, width=1024, height=768 ! decodebin ! videoconvert ! x264enc bitrate=1000 speed-preset=fast ! video/x-h264, profile=baseline ! h264parse ! queue ! flvmux name=mux pulsesrc ! queue ! voaacenc ! queue ! mux. mux. ! rtmpsink location=\"rtmp://localhost/myapp/mystream live=1\"
 
-gst-launch-1.0 -v   rfbsrc view-only=true shared=true ! decodebin ! autovideoconvert !   video/x-raw,format=YV12,width=1024,height=768,framerate=10/1 ! x264enc bitrate=1000 speed-preset=fast  ! video/x-h264,profile=baseline ! h264parse ! queue !  flvmux name=mux pulsesrc ! queue ! voaacenc ! queue ! mux. mux. ! rtmpsink location=\"rtmp://localhost/myapp/mystream live=1\"
+GST_DEBUG="rfbsrc:4" gst-launch-1.0 rfbsrc host=10.9.140.21 password=cpbtjgbia4 incremental=true view-only=true shared=true ! video/x-raw, format=BGRx, framerate=10/1, width=1024, height=768 ! decodebin ! videoconvert ! x264enc bitrate=1500 speed-preset=superfast ! video/x-h264, profile=baseline ! h264parse ! queue ! flvmux name=mux pulsesrc ! queue ! voaacenc ! queue ! mux. mux. ! filesink location=test.flv
 
-video/r-raw,format=RGB,width=1024,height=768,framerate=10/1
 
-rfbsrc host=10.9.140.21 password=cpbtjgbia4 view-only=true shared=true
+gst-launch-1.0 \
+flvmux name=mux ! filesink location=test.flv \
+pulsesrc ! queue max-size-bytes=0 max-size-buffers=0 max-size-time=0 ! voaacenc ! queue ! mux. \
+rfbsrc host=10.9.140.21 password=cpbtjgbia4 incremental=false view-only=true shared=true ! video/x-raw, format=BGRx, framerate=3/1, width=1024, height=768 ! decodebin ! queue ! videoconvert ! x264enc bitrate=200 speed-preset=superfast tune=zerolatency byte-stream=true ! video/x-h264, profile=baseline ! h264parse ! queue ! mux.
 
-gst-launch-1.0 rfbsrc incremental=false host=10.9.140.21 password=cpbtjgbia4 view-only=true shared=true ! video/x-raw,format=RGB,width=1024,height=768,framerate=10/1 ! videoconvert ! x264enc bitrate=1000 speed-preset=fast  ! video/x-h264,profile=baseline ! filesink location=data.h264
+GST_DEBUG="rfbsrc:4" ./test-launch \
+flvmux name=flvmux ! filesink location=test.flv \
+rfbsrc host=10.9.140.21 password=cpbtjgbia4 incremental=false view-only=true shared=true ! video/x-raw, format=BGRx, framerate=3/1, width=1024, height=768 ! decodebin ! queue ! videoconvert ! x264enc bitrate=750 speed-preset=superfast tune=zerolatency byte-stream=true threads=2 ! video/x-h264, profile=baseline ! h264parse !  tee name=flvmux ! rtph264pay pt=96 name=pay0 \
+pulsesrc ! queue max-size-bytes=0 max-size-buffers=0 max-size-time=0 ! voaacenc ! tee name=flvmux ! rtpmp4apay pt=97 name=pay1 \
 
-gst-launch-1.0 rfbsrc host=10.9.140.21 password=cpbtjgbia4 view-only=true shared=true ! decodebin ! autovideoconvert !   video/x-raw,format=YV12,width=1024,height=768,framerate=10/1 ! x264enc bitrate=1000 speed-preset=fast  ! video/x-h264,profile=baseline ! h264parse ! queue !  flvmux name=mux pulsesrc ! queue ! voaacenc ! queue ! mux. mux. ! rtmpsink location=\"rtmp://localhost/myapp/mystream live=1\"
 
-  queue ! \
-  theoraenc ! oggmux ! tcpserversink
+rtph264pay
+  udpsink bind-address:10.9.143.138 bind-port:42050 sync=false
+
+  udpsink host=127.0.0.1 port=42050 sync=false
+ udpsink host=192.168.0.103 port=5000 auto-multicast=true
+
+ x264enc: Add speed-preset and [psy-]tuning properties
+
+ Use of a rate control method (pass, bitrate, quantizer, etc properties), a
+ preset and possibly a profile and/or tuning are now the recommended way to
+ configure x264 through x264enc.
+
+ If a preset/tuning are specified then these will define the default values and
+ the property defaults will be ignored. After this the option-string property is
+ applied, followed by the user-set properties, fast first pass restrictions and
+ finally the profile restrictions
+
+  Enum "GstX264EncPass" Default: 0, "cbr"
+  (0): cbr - Constant Bitrate Encoding
+  (4): quant - Constant Quantizer (debugging only)
+  (5): qual - Constant Quality
+  (17): pass1 - VBR Encoding - Pass 1
+  (18): pass2 - VBR Encoding - Pass 2
+  (19): pass3 - VBR Encoding - Pass 3
 
 echo "unfinished, look at the source"
 exit 1

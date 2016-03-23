@@ -60,6 +60,8 @@ RUN set -x; \
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-bad \
     gstreamer1.0-plugins-ugly \
+    libgstrtspserver-1.0-0 \
+    libgstrtspserver-1.0-dev \
     python-gst-1.0 \
     openbox \
     chromium-browser \
