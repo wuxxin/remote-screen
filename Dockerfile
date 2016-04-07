@@ -156,20 +156,13 @@ ONBUILD RUN chown -R user:user /home/user/custom \
           /home/user/custom/custom_root.sh \
         fi
 
-# recreate ssh host keys
-ONBUILD RUN if test ! -e /etc/ssh/ssh_host_rsa_key; then \
-      echo "reconfigure ssh server keys" \
-      export LC_ALL=C \
-      export DEBIAN_FRONTEND=noninteractive \
-      dpkg-reconfigure openssh-server \
-    fi
-
 # entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 VOLUME ["/data"]
 EXPOSE 5000
-EXPOSE 22/tcp
+#EXPOSE 22/tcp
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["ssh"]

@@ -31,18 +31,21 @@ __BEGIN_VIEWONLY
 $REMOTE_VIEWONLY_PASSWORD
 EOF
 
+  for a in ssh .ssh .config .pki; do
+    if test ! -f /data/$a; then
+      mkdir -p /data/$a
+    fi
+  done
+
   if test ! -e /etc/ssh/ssh_host_rsa_key; then
+    if test ! -e /etc/ssh; then
+      ln -s -T /data/ssh /etc/ssh
+    fi
     echo "reconfigure ssh server keys"
     export LC_ALL=C
     export DEBIAN_FRONTEND=noninteractive
     dpkg-reconfigure openssh-server
   fi
-
-  for a in .config .pki; do
-    if test ! -f /data/$a; then
-      mkdir -p /data/$a
-    fi
-  done
 
   cd /home/user
   exec /usr/bin/supervisord -c /home/user/supervisord.conf "$@"
