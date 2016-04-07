@@ -161,7 +161,7 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 VOLUME ["/data"]
-EXPOSE 5000
+#EXPOSE 5000
 #EXPOSE 22/tcp
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
