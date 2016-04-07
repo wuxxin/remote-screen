@@ -144,7 +144,7 @@ USER root
 COPY xpra-html5 /usr/share/xpra/www
 
 # copy find-cursor to system wide /usr/local/bin
-RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
+#RUN cp /home/user/find-cursor/find-cursor /usr/local/bin/find-cursor
 
 # copy possible custom configuration to container, and execute custom_root.sh from it
 ONBUILD COPY custom /home/user/custom
