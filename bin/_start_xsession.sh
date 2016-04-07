@@ -10,10 +10,10 @@ sleep 3
 x11vnc -xdummy -display $DISPLAY -viewpasswd $REMOTE_VIEWONLY_PASSWORD -passwd $REMOTE_READWRITE_PASSWORD -rfbport 5900 -forever -shared  &
 websockify --auto-pong --heartbeat=58 --web /home/user/noVNC/ 5000 localhost:5900 &
 openbox &
-xbindkeys_autostart &
 cat << EOF
 INFORMATION:
 ------------
+disabled: xbindkeys_autostart
 
 Read/Write Password: $REMOTE_READWRITE_PASSWORD
 View only Password: $REMOTE_VIEWONLY_PASSWORD

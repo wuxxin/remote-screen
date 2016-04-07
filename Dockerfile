@@ -115,11 +115,11 @@ COPY bin /home/user/bin
 COPY supervisord.conf /home/user/supervisord.conf
 
 # get & compile findcursor
-RUN hg clone https://bitbucket.org/Carpetsmoker/find-cursor \
-    && cd find-cursor \
-    && sed -i.bak "s/int speed = 400;/int speed = 800;/g" find-cursor.c \
-    && rm find-cursor.c.bak \
-    && make
+#RUN hg clone https://bitbucket.org/Carpetsmoker/find-cursor \
+#    && cd find-cursor \
+#    && sed -i.bak "s/int speed = 400;/int speed = 800;/g" find-cursor.c \
+#    && rm find-cursor.c.bak \
+#    && make
 
 # xbindkeys config
 COPY xbindkeysrc /home/user/.xbindkeysrc
