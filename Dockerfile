@@ -69,8 +69,15 @@ RUN set -x; \
     evince \
     && rm -rf /var/lib/apt/lists/*
 
-# delete ssh host keys regenerate them on deploy
-RUN rm /etc/ssh/ssh_host_*_key*
+# ssh configuration
+RUN rm /etc/ssh/ssh_host_*_key*; rm /etc/ssh/moduli; \
+  sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
+  sed -i.bak 's/.*UseDNS.+yes/UseDNS no/' /etc/ssh/sshd_config; \
+  rm /etc/ssh/sshd_config.bak; \
+  mkdir -p /data; \
+  cp -a -t /data/ /etc/ssh/ && rm -r /etc/ssh; \
+  ln -s -T /data/ssh /etc/ssh; \
+  mkdir /var/run/sshd
 
 # install from pypi: websockify for python3 because 0.7 is currently only available for py3
 RUN pip3 install websockify
@@ -85,25 +92,18 @@ RUN echo -e "LANG=en_US.UTF-8\nLC_TYPE=en_US.UTF-8\nLC_MESSAGES=POSIX\nLANGUAGE=
 RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 RUN locale -a
 
-# ssh config
-RUN sed -i.bak 's/.*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config; \
- rm /etc/ssh/sshd_config.bak; \
- mkdir /var/run/sshd;
-
 # Add user to run the application, update authorized_keys, add symlinks to volume data
 COPY authorized_keys /tmp/authorized_keys
 RUN adduser --disabled-password --gecos "" user; \
-    mkdir -p /home/user/.ssh; \
+    for a in .ssh .config .pki; do \
+      mkdir -p /data/$a; \
+      ln -s /data/$a /home/user/$a; \
+      chown -R user:user /data/$a; \
+    done; \
     chmod 700 /home/user/.ssh; \
     cp -f /tmp/authorized_keys /home/user/.ssh/authorized_keys; \
     chmod 600 /home/user/.ssh/authorized_keys; \
-    chown -R user:user /home/user/.ssh; \
-    for a in .config .pki; do \
-      mkdir -p /data/$a; \
-      ln -s /data/$a /home/user/$a; \
-    done; \
-    chown -R user:user /data
-
+    chown -R user:user /home/user/.ssh
 
 USER user
 WORKDIR /home/user
