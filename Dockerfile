@@ -6,10 +6,10 @@ ENV REMOTE_VIEWONLY_PASSWORD unset
 ENV REMOTE_READWRITE_PASSWORD unset
 ENV REMOTE_AUTOMATIC_VIEW true
 
-# we run upgrade (bad container practice) to workaround old "official" docker images (also bad practice, but this time from docker inc)
+# we run upgrade (bad container practice) to workaround old "official" docker images (also bad practice)
 
-ENV DEBIAN_FRONTEND noninteractive
 RUN set -x; \
+    export DEBIAN_FRONTEND=noninteractive; \
     apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
@@ -67,6 +67,7 @@ RUN set -x; \
     chromium-browser \
     firefox \
     evince \
+    tmux \
     && rm -rf /var/lib/apt/lists/*
 
 # ssh configuration
